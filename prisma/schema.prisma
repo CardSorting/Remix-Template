@@ -1,0 +1,52 @@
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  name      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  // Relationships
+  products  Product[]
+  sources   Source[]
+  // Indexes and table mapping
+  @@index([email])
+  @@map("users")
+}
+
+model Product {
+  id        Int       @id @default(autoincrement())
+  name      String
+  link      String?   // Nullable link field
+  userId    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional soft deletion
+
+  // Relationships
+  user      User      @relation(fields: [userId], references: [id])
+  sources   Source[]
+
+  // Indexes and table mapping
+  @@index([name, link])
+  @@map("products")
+}
+
+model Source {
+  id        Int       @id @default(autoincrement())
+  name      String
+  url       String
+  productId Int?
+  userId    Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional soft deletion
+
+  // Relationships
+  product   Product?  @relation(fields: [productId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  // Indexes and table mapping
+  @@index([name, url])
+  @@map("sources")
+}
